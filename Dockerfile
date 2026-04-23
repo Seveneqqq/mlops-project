@@ -16,4 +16,8 @@ RUN apt-get update && \
 
 COPY . .
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENV PORT=80
+
+EXPOSE 80
+
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "80"]
