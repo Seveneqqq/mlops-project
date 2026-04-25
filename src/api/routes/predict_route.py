@@ -15,6 +15,7 @@ def get_predictions(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=PredictResponse)
 def predict(request: PredictRequest, db: Session = Depends(get_db)):
+    print("Triggering prediction with data:", request.data)
     try:
         result = PredictService.predict(
             db=db,

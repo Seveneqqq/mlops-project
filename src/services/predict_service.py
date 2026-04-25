@@ -17,7 +17,7 @@ class PredictService:
 
     @staticmethod
     def predict(db: Session, model_name: str, data: dict):
-
+        print("PredictService called with model_name:", model_name)
         model_path = os.path.join(MODEL_PATH, model_name)
 
         if not os.path.exists(model_path):
@@ -43,24 +43,24 @@ class PredictService:
 
         prediction_label = prediction_map.get(int(prediction), str(prediction))
 
-        # =========================
-        # 🔥 MLflow LOGGING
-        # =========================
-        mlflow.set_experiment("student-dropout-inference")
+        # # =========================
+        # # 🔥 MLflow LOGGING
+        # # =========================
+        # mlflow.set_experiment("student-dropout-inference")
 
-        with mlflow.start_run():
+        # with mlflow.start_run():
 
-            mlflow.log_param("model_name", model_name)
+        #     mlflow.log_param("model_name", model_name)
 
-            # zapis input jako JSON (czytelniej niż str)
-            mlflow.log_param("input_data", json.dumps(data))
+        #     # zapis input jako JSON (czytelniej niż str)
+        #     mlflow.log_param("input_data", json.dumps(data))
 
-            mlflow.log_param("prediction", prediction_label)
+        #     mlflow.log_param("prediction", prediction_label)
 
-            if proba is not None:
-                mlflow.log_metric("probability", proba)
+        #     if proba is not None:
+        #         mlflow.log_metric("probability", proba)
 
-            mlflow.log_param("timestamp", datetime.now().isoformat())
+        #     mlflow.log_param("timestamp", datetime.now().isoformat())
 
         # =========================
         # 🔥 DB LOGGING (monitoring)
