@@ -17,12 +17,12 @@ export default function App() {
   const hasFetched = useRef(false)
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:80/auth/login"
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/login`
   }
 
   const checkLoginResult = async () => {
     try {
-      const response = await fetch("http://localhost:80/auth/me", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
         method: "GET",
         credentials: "include",
       })
