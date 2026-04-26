@@ -75,7 +75,7 @@ class AuthService:
         print("access_token (first 20):", access_token[:20])
         print("refresh_token (first 20):", refresh_token[:20])
 
-        redirect_to = next_url if next_url and "http" in next_url else f"{FRONTEND_URL}/survey"
+        redirect_to = next_url if next_url and "http" in next_url else f"{FRONTEND_URL}"
 
         print("➡️ FINAL REDIRECT:", redirect_to)
 
