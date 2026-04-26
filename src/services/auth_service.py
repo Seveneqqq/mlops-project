@@ -18,7 +18,6 @@ class AuthService:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     GOOGLE_REDIRECT_URI = GOOGLE_REDIRECT_URI
 
-    # 🔐 LOGIN
     @staticmethod
     def login_with_google(origin_url: str):
         params = urlencode({"next": origin_url})
@@ -35,42 +34,44 @@ class AuthService:
 
         return RedirectResponse(url=response.url)
 
-    # 🔁 CALLBACK
     @staticmethod
     def login_callback(request: Request):
         code = request.query_params.get("code")
-        next_url = request.query_params.get("next", "/")
-
+        next_url = request.query_params.get("next")
+    
         response = AuthService.supabase.auth.exchange_code_for_session({
             "auth_code": code
         })
-
+    
         access_token = response.session.access_token
         refresh_token = response.session.refresh_token
-
-        redirect_response = RedirectResponse(url=next_url)
-
+    
+        FRONTEND_URL = os.getenv("FRONTEND_URL")
+    
+        redirect_to = next_url if next_url and next_url != "/" else f"{FRONTEND_URL}"
+    
+        redirect_response = RedirectResponse(url=redirect_to)
+    
         redirect_response.set_cookie(
             key="access_token",
             value=access_token,
             httponly=True,
-            secure=False,
-            samesite="lax",
+            secure=True,        
+            samesite="none",      
             max_age=3600
         )
-
+    
         redirect_response.set_cookie(
             key="refresh_token",
             value=refresh_token,
             httponly=True,
-            secure=False,
-            samesite="lax",
+            secure=True,
+            samesite="none",
             max_age=60 * 60 * 24 * 14
         )
 
         return redirect_response
 
-    # 👤 GET USER
     @staticmethod
     def get_current_user(request: Request):
         auth_header: Optional[str] = request.headers.get("Authorization")
@@ -91,12 +92,10 @@ class AuthService:
 
         return user.user
 
-    # 🔗 DEPENDS
     @staticmethod
     def get_current_user_dep(request: Request):
         return AuthService.get_current_user(request)
 
-    # 🔒 AUTH REQUIRED
     @staticmethod
     def require_auth(request: Request):
         user = AuthService.get_current_user(request)
