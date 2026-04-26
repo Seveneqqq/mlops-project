@@ -278,7 +278,7 @@ export default function Survey() {
 
         {q.type === "select" ? (
           <div className="mt-3 space-y-2">
-            {q.options.map((o: any) => {
+            {q.options?.map((o: any) => {
               const selected = data[q.key] === o.value
 
               return (

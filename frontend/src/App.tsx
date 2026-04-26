@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { motion } from "motion/react"
 import { FcGoogle } from "react-icons/fc"
-import { toast, Toaster } from "sonner"
+import { Toaster } from "sonner"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router"
 
 import StudentSurvey from "./pages/StudentSuccessSurvey"
