@@ -19,6 +19,7 @@ print("SUPABASE_KEY:", "SET" if SUPABASE_KEY else "NONE")
 print("GOOGLE_REDIRECT_URI:", GOOGLE_REDIRECT_URI)
 print("FRONTEND_URL:", FRONTEND_URL)
 
+
 class AuthService:
 
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -75,14 +76,22 @@ class AuthService:
         print("access_token (first 20):", access_token[:20])
         print("refresh_token (first 20):", refresh_token[:20])
 
+        # 🔥 TWOJA ORYGINALNA LOGIKA (ZOSTAWIONA)
         redirect_to = next_url if next_url and "http" in next_url else f"{FRONTEND_URL}"
 
-        print("➡️ FINAL REDIRECT:", redirect_to)
+        print("➡️ ORIGINAL REDIRECT:", redirect_to)
 
-        redirect_response = RedirectResponse(url=redirect_to)
+        # 🔥 DODANE — TOKENY W URL (BEZ USUWANIA NICZEGO)
+        separator = "&" if "?" in redirect_to else "?"
+        redirect_with_tokens = f"{redirect_to}{separator}access_token={access_token}&refresh_token={refresh_token}"
+
+        print("➡️ FINAL REDIRECT WITH TOKENS:", redirect_with_tokens)
+
+        redirect_response = RedirectResponse(url=redirect_with_tokens)
 
         print("🍪 SETTING COOKIES...")
 
+        # 🔥 TWOJE COOKIES (BEZ ZMIAN)
         redirect_response.set_cookie(
             key="access_token",
             value=access_token,

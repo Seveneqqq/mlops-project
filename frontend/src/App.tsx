@@ -11,23 +11,33 @@ import StudentSurvey from "./pages/StudentSuccessSurvey"
 
 const MotionButton = motion(Button)
 
-console.log("ENV:", import.meta.env)
-console.log("API URL:", import.meta.env.VITE_API_URL)
-
 export default function App() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const hasFetched = useRef(false)
 
+  const API = import.meta.env.VITE_API_URL
+
   const handleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/login`
+    window.location.href = `${API}/auth/login`
   }
 
+  // 🔥 CHECK USER
   const checkLoginResult = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+      const token = localStorage.getItem("access_token")
+
+      if (!token) {
+        setUser(null)
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch(`${API}/auth/me`, {
         method: "GET",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       })
 
       if (response.ok) {
@@ -44,8 +54,30 @@ export default function App() {
   }
 
   useEffect(() => {
+    // 🔥 1. ZŁAP TOKEN Z URL
+    const params = new URLSearchParams(window.location.search)
+
+    const accessToken = params.get("access_token")
+    const refreshToken = params.get("refresh_token")
+
+    if (accessToken && refreshToken) {
+      console.log("🔥 TOKENY Z URL")
+
+      localStorage.setItem("access_token", accessToken)
+      localStorage.setItem("refresh_token", refreshToken)
+
+      // usuń z URL
+      window.history.replaceState({}, document.title, "/")
+
+      // redirect
+      window.location.href = "/home"
+      return
+    }
+
+    // 🔥 2. NORMAL FLOW
     if (hasFetched.current) return
     hasFetched.current = true
+
     checkLoginResult()
   }, [])
 
@@ -65,75 +97,55 @@ export default function App() {
     <Router>
       <Routes>
 
-        {/* ANKIETA - dostępna dla wszystkich */}
+        {/* HOME */}
+        <Route path="/home" element={<StudentSurvey />} />
+
+        {/* ANKIETA */}
         <Route path="/survey" element={<StudentSurvey />} />
 
-        {/* STRONA GŁÓWNA */}
+        {/* MAIN */}
         <Route
           path="/"
           element={
             user ? (
-              <Navigate to="/survey" replace />
+              <Navigate to="/home" replace />
             ) : (
               <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
                 <motion.div
                   initial={{ opacity: 0, y: -50, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="
-                    w-full max-w-md
-                    bg-white/5
-                    backdrop-blur-xl
-                    border border-white/10
-                    shadow-2xl
-                    rounded-2xl
-                    p-6
-                  "
+                  className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-6"
                 >
                   <h1 className="text-2xl font-semibold text-center mb-4">
                     MLOps Platform
                   </h1>
 
                   <p className="text-gray-400 text-sm text-center mb-6">
-                    Zarządzaj pipeline’ami ML i sprawdź swoje szanse ukończenia studiów.
+                    Zarządzaj ML i sprawdź swoje szanse ukończenia studiów
                   </p>
 
                   <div className="flex flex-col gap-3">
 
-                    {/* LOGIN */}
                     <MotionButton
                       onClick={handleLogin}
-                      className="
-                        w-full
-                        bg-white/10
-                        hover:bg-white/20
-                        border border-white/10
-                        text-white
-                        flex items-center justify-center gap-2
-                        py-5
-                      "
+                      className="w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center gap-2 py-5"
                     >
                       <FcGoogle size={20} />
                       Zaloguj się przez Google
                     </MotionButton>
 
-                    {/* BEZ LOGOWANIA */}
                     <Button
                       onClick={() => (window.location.href = "/survey")}
                       variant="outline"
-                      className="
-                        w-full
-                        border-purple-500/30
-                        text-purple-300
-                        hover:bg-purple-500/10
-                      "
+                      className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/10"
                     >
-                      Przejdź do ankiety bez logowania
+                      Przejdź do ankiety
                     </Button>
                   </div>
 
                   <p className="text-xs text-gray-500 text-center mt-4">
-                    Logowanie nie jest wymagane do testu modelu
+                    Logowanie opcjonalne
                   </p>
                 </motion.div>
 
