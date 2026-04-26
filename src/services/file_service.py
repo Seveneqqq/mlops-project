@@ -16,25 +16,34 @@ class FileService:
 
     @staticmethod
     def save_file(file: UploadFile) -> str:
-        filename = file.filename
+        if not file or not file.filename:
+            raise ValueError("Invalid file")
 
+        filename = file.filename.strip()
         blob_name = f"raw/{filename}"
+
         blob_client = container_client.get_blob_client(blob_name)
-
         content = file.file.read()
-
         blob_client.upload_blob(content, overwrite=True)
 
         return filename
 
     @staticmethod
     def get_file_info(filename: str):
+        filename = filename.strip()
         blob_name = f"raw/{filename}"
+
         blob_client = container_client.get_blob_client(blob_name)
 
-        data = blob_client.download_blob().readall()
+        try:
+            data = blob_client.download_blob().readall()
+        except Exception:
+            raise FileNotFoundError("File not found")
 
-        df = pd.read_csv(BytesIO(data))
+        try:
+            df = pd.read_csv(BytesIO(data))
+        except Exception:
+            raise ValueError("Invalid CSV")
 
         return {
             "records_count": len(df),
@@ -68,7 +77,9 @@ class FileService:
 
     @staticmethod
     def delete_file(filename: str) -> bool:
+        filename = filename.strip()
         blob_name = f"raw/{filename}"
+
         blob_client = container_client.get_blob_client(blob_name)
 
         try:
@@ -76,3 +87,15 @@ class FileService:
             return True
         except Exception:
             return False
+
+    @staticmethod
+    def download_file_bytes(filename: str) -> bytes:
+        filename = filename.strip()
+        blob_name = f"raw/{filename}"
+
+        blob_client = container_client.get_blob_client(blob_name)
+
+        try:
+            return blob_client.download_blob().readall()
+        except Exception:
+            raise FileNotFoundError("File not found")

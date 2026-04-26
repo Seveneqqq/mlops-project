@@ -1,5 +1,4 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-import os
 from src.services.file_service import FileService
 from src.api.dto.response.file_response import (
     FileUploadResponse,
@@ -16,13 +15,11 @@ async def upload_file(file: UploadFile = File(...)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files allowed")
 
-    file_path = FileService.save_file(file)
-    info = FileService.get_file_info(file_path)
-
-    saved_filename = os.path.basename(file_path)
+    filename = FileService.save_file(file)
+    info = FileService.get_file_info(filename)
 
     return FileUploadResponse(
-        filename=saved_filename,
+        filename=filename,
         size_kb=info["size_kb"],
         records_count=info["records_count"],
         columns=info["columns"]
@@ -37,10 +34,8 @@ def list_files():
 
 @router.get("/{filename}", response_model=FileInfoResponse)
 def get_file_info(filename: str):
-    file_path = f"src/data/raw/{filename}"
-
     try:
-        info = FileService.get_file_info(file_path)
+        info = FileService.get_file_info(filename)
     except Exception:
         raise HTTPException(status_code=404, detail="File not found or invalid")
 
