@@ -1,10 +1,15 @@
+from azure.storage.blob import BlobServiceClient
 import os
-from datetime import datetime
 import pandas as pd
 from fastapi import UploadFile
 from typing import List, Dict
+from io import BytesIO
 
-RAW_DATA_PATH = "src/data/raw"
+AZURE_CONN = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+CONTAINER = os.getenv("AZURE_CONTAINER_NAME", "mlops-files")
+
+blob_service = BlobServiceClient.from_connection_string(AZURE_CONN)
+container_client = blob_service.get_container_client(CONTAINER)
 
 
 class FileService:
@@ -12,39 +17,35 @@ class FileService:
     @staticmethod
     def save_file(file: UploadFile) -> str:
         filename = file.filename
-        file_path = os.path.join(RAW_DATA_PATH, filename)
 
-        if os.path.exists(file_path):
-            name, ext = os.path.splitext(filename)
-            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            filename = f"{name}_{timestamp}{ext}"
-            file_path = os.path.join(RAW_DATA_PATH, filename)
+        blob_name = f"raw/{filename}"
+        blob_client = container_client.get_blob_client(blob_name)
 
-        with open(file_path, "wb") as f:
-            f.write(file.file.read())
+        content = file.file.read()
 
-        return file_path
+        blob_client.upload_blob(content, overwrite=True)
+
+        return filename
 
     @staticmethod
-    def get_file_info(file_path: str):
-        df = pd.read_csv(file_path)
-        size_kb = os.path.getsize(file_path) / 1024
+    def get_file_info(filename: str):
+        blob_name = f"raw/{filename}"
+        blob_client = container_client.get_blob_client(blob_name)
+
+        data = blob_client.download_blob().readall()
+
+        df = pd.read_csv(BytesIO(data))
 
         return {
             "records_count": len(df),
             "columns": df.columns.tolist(),
-            "size_kb": round(size_kb, 2)
+            "size_kb": round(len(data) / 1024, 2)
         }
 
     @staticmethod
     def list_files() -> List[str]:
-        files = os.listdir(RAW_DATA_PATH)
-        files = sorted(
-            files,
-            key=lambda f: os.path.getmtime(os.path.join(RAW_DATA_PATH, f)),
-            reverse=True
-        )
-        return files
+        blobs = container_client.list_blobs(name_starts_with="raw/")
+        return [b.name.replace("raw/", "") for b in blobs]
 
     @staticmethod
     def list_files_with_info() -> List[Dict]:
@@ -52,23 +53,26 @@ class FileService:
         result = []
 
         for f in files:
-            path = os.path.join(RAW_DATA_PATH, f)
-            info = FileService.get_file_info(path)
-            result.append({
-                "filename": f,
-                "size_kb": info["size_kb"],
-                "records_count": info["records_count"],
-                "columns": info["columns"]
-            })
+            try:
+                info = FileService.get_file_info(f)
+                result.append({
+                    "filename": f,
+                    "size_kb": info["size_kb"],
+                    "records_count": info["records_count"],
+                    "columns": info["columns"]
+                })
+            except Exception:
+                continue
 
         return result
 
     @staticmethod
     def delete_file(filename: str) -> bool:
-        file_path = os.path.join(RAW_DATA_PATH, filename)
+        blob_name = f"raw/{filename}"
+        blob_client = container_client.get_blob_client(blob_name)
 
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        try:
+            blob_client.delete_blob()
             return True
-
-        return False
+        except Exception:
+            return False

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from datetime import datetime
+import io
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -11,6 +12,9 @@ import joblib
 
 import mlflow
 import mlflow.sklearn
+
+# 🔥 AZURE
+from src.utils.blob_helper import download_bytes, upload_bytes
 
 
 PROCESSED_PATH = "src/data/processed"
@@ -24,12 +28,20 @@ class MLPipeline:
     @staticmethod
     def train(filename: str, target: str, model_type: str, params: dict):
 
-        file_path = os.path.join(PROCESSED_PATH, filename)
+        print("\n🔥 MLPipeline START")
+        print("filename:", filename)
 
-        if not os.path.exists(file_path):
-            raise Exception("Processed file not found")
+        # 🔥 POBIERZ Z AZURE
+        print("⬇️ downloading processed file from Azure...")
+        try:
+            file_bytes = download_bytes(f"processed/{filename}")
+        except Exception as e:
+            print("❌ download failed:", str(e))
+            raise Exception("Processed file not found in Azure")
 
-        df = pd.read_csv(file_path)
+        print("✅ file downloaded")
+
+        df = pd.read_csv(io.BytesIO(file_bytes))
 
         if df.empty:
             raise Exception("Dataset is empty")
@@ -70,14 +82,19 @@ class MLPipeline:
 
             mlflow.sklearn.log_model(model, "model")
 
-        os.makedirs(MODEL_PATH, exist_ok=True)
-
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         model_name = f"{model_type}_{timestamp}.pkl"
 
-        model_path = os.path.join(MODEL_PATH, model_name)
+        print("⬆️ uploading model to Azure...")
 
-        joblib.dump(model, model_path)
+        # 🔥 ZAPIS DO AZURE (bez lokalnego pliku)
+        model_buffer = io.BytesIO()
+        joblib.dump(model, model_buffer)
+        model_buffer.seek(0)
+
+        upload_bytes(model_buffer.read(), f"models/{model_name}")
+
+        print("✅ model uploaded")
 
         return {
             "model_name": model_name,
