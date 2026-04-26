@@ -8,6 +8,7 @@ import { Toaster } from "sonner"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router"
 
 import StudentSurvey from "./pages/StudentSuccessSurvey"
+import Dashboard from "./pages/Dashboard"
 
 const MotionButton = motion(Button)
 
@@ -98,7 +99,7 @@ export default function App() {
       <Routes>
 
         {/* HOME */}
-        <Route path="/home" element={<StudentSurvey />} />
+        <Route path="/home" element={<Dashboard />} />
 
         {/* ANKIETA */}
         <Route path="/survey" element={<StudentSurvey />} />
