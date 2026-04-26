@@ -19,7 +19,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/mlops-backend:latest .
+          docker build --no-cache -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/mlops-backend:latest .
 
       - name: Push Docker image
         run: |
