@@ -23,6 +23,37 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 MODEL_PATH = os.path.join(BASE_DIR, "ml_models")
 
 
+# 🔥 FIX: normalize params (bool, int, float, None)
+def normalize_params(params: dict):
+    normalized = {}
+
+    for k, v in params.items():
+
+        if v is None or v == "":
+            continue
+
+        if isinstance(v, str):
+
+            if v.lower() == "true":
+                normalized[k] = True
+            elif v.lower() == "false":
+                normalized[k] = False
+            elif v.lower() == "none":
+                normalized[k] = None
+            else:
+                try:
+                    if "." in v:
+                        normalized[k] = float(v)
+                    else:
+                        normalized[k] = int(v)
+                except:
+                    normalized[k] = v
+        else:
+            normalized[k] = v
+
+    return normalized
+
+
 class MLPipeline:
 
     @staticmethod
@@ -58,8 +89,11 @@ class MLPipeline:
             X, y, test_size=0.2, random_state=42
         )
 
+        # 🔥 FIX: normalize params
+        params = normalize_params(params)
+
         if model_type == "logistic_regression":
-            model = LogisticRegression(max_iter=1000, **params)
+            model = LogisticRegression(**params)
 
         elif model_type == "random_forest":
             model = RandomForestClassifier(**params)

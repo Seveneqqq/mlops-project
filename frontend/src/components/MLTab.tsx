@@ -52,7 +52,7 @@ export default function MLTab() {
   const [loading, setLoading] = useState(false)
 
   const fetchFiles = async () => {
-    const res = await fetch(`${API}/files/`)
+    const res = await fetch(`${API}/files/processed`)
     const data = await res.json()
     setFiles(data.files || [])
   }
