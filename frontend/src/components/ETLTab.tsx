@@ -24,7 +24,7 @@ type Steps = {
   scale_numeric: "standard" | "minmax" | null
 }
 
-export default function ETLTab() {
+export default function EtlTab() {
   const [files, setFiles] = useState<string[]>([])
   const [selectedFile, setSelectedFile] = useState<string>("")
 
