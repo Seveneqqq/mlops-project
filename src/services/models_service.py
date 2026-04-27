@@ -1,6 +1,6 @@
 # src/services/models_service.py
 from sqlalchemy.orm import Session
-from src.db.default_model import DefaultModel
+from src.db.models import DefaultModel, Prediction
 
 
 class ModelsService:

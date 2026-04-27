@@ -9,7 +9,7 @@ import mlflow
 
 from sqlalchemy.orm import Session
 from src.db.models import Prediction
-from src.db.models.default_model import DefaultModel
+from src.db.models import DefaultModel, Prediction
 
 # 🔥 AZURE
 from src.utils.blob_helper import download_bytes
