@@ -31,6 +31,10 @@ def list_files():
     files = FileService.list_files()
     return FileListResponse(files=files)
 
+@router.get("/processed", response_model=FileListResponse)
+def list_files_processed():
+    files = FileService.list_files_processed()
+    return FileListResponse(files=files)
 
 @router.get("/{filename}", response_model=FileInfoResponse)
 def get_file_info(filename: str):
