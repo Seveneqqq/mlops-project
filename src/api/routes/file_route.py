@@ -10,6 +10,7 @@ from src.api.dto.response.file_response import (
 router = APIRouter(prefix="/files", tags=["Files"])
 
 
+# 🔹 UPLOAD
 @router.post("/upload", response_model=FileUploadResponse)
 async def upload_file(file: UploadFile = File(...)):
     if not file.filename.endswith(".csv"):
@@ -26,16 +27,32 @@ async def upload_file(file: UploadFile = File(...)):
     )
 
 
+# 🔹 LIST RAW FILES
 @router.get("/", response_model=FileListResponse)
 def list_files():
     files = FileService.list_files()
     return FileListResponse(files=files)
 
+
+# 🔹 LIST PROCESSED FILES
 @router.get("/processed", response_model=FileListResponse)
 def list_files_processed():
     files = FileService.list_files_processed()
     return FileListResponse(files=files)
 
+
+# 🔥 🔥 🔥 NAJWAŻNIEJSZE — MUSI BYĆ PRZED /{filename}
+# 🔹 LIST MODELS (Azure)
+@router.get("/models", response_model=FileListResponse)
+def list_files_models():
+    try:
+        files = FileService.list_files_models()
+        return FileListResponse(files=files)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 🔹 FILE INFO (MUSI BYĆ NA KOŃCU)
 @router.get("/{filename}", response_model=FileInfoResponse)
 def get_file_info(filename: str):
     try:
@@ -51,6 +68,7 @@ def get_file_info(filename: str):
     )
 
 
+# 🔹 DELETE
 @router.delete("/{filename}", response_model=MessageResponse)
 def delete_file(filename: str):
     success = FileService.delete_file(filename)
