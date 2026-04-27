@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import FilesTab from "../components/FilesTab"
-import ETLTab from "../components/EtlTab"
+import ETLTab from "@/components/EtlTab"
 import MLTab from "../components/MLTab"
 
 const tabs = [
