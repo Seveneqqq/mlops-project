@@ -17,6 +17,7 @@ import FilesTab from "../components/FilesTab"
 import EtlTab from "../components/EtlTab"
 import MLTab from "../components/MLTab"
 import PipelineTab from "../components/PipelineTab"
+import ModelsTab from "../components/ModelsTab"
 
 const managementTabs = [
   { id: "files", label: "Files", icon: Files },
@@ -130,7 +131,7 @@ export default function Dashboard() {
         {tab === "etl" && <EtlTab />}
         {tab === "ml" && <MLTab />}
         {tab === "pipelines" && <PipelineTab />}
-        {tab === "models" && <div>Models coming soon...</div>}
+        {tab === "models" && <ModelsTab />}
         {tab === "history" && <div>History coming soon...</div>}
       </div>
     </div>
