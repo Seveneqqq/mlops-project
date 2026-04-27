@@ -9,6 +9,7 @@ import mlflow
 
 from sqlalchemy.orm import Session
 from src.db.models import Prediction
+from src.db.models.default_model import DefaultModel
 
 # 🔥 AZURE
 from src.utils.blob_helper import download_bytes
@@ -24,7 +25,17 @@ class PredictService:
     @staticmethod
     def predict(db: Session, model_name: str, data: dict):
         print("\n🔥 PredictService START")
-        print("model_name:", model_name)
+        print("incoming model_name:", model_name)
+
+        # 🔥 ALWAYS GET DEFAULT MODEL FROM DB
+        default_model = db.query(DefaultModel).filter_by(is_active=True).first()
+
+        if not default_model:
+            raise Exception("No default model set")
+
+        model_name = default_model.model_name
+
+        print("🎯 using default model from DB:", model_name)
 
         print("⬇️ downloading model from Azure (bytes)...")
 

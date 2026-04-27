@@ -62,6 +62,11 @@ class FileService:
         return [b.name.replace("processed/", "") for b in blobs]
 
     @staticmethod
+    def list_files_models() -> List[str]:
+        blobs = container_client.list_blobs(name_starts_with="models/")
+        return [b.name.replace("models/", "") for b in blobs]
+
+    @staticmethod
     def list_files_with_info() -> List[Dict]:
         files = FileService.list_files()
         result = []

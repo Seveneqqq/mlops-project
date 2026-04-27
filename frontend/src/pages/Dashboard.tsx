@@ -5,24 +5,36 @@ import {
   Files,
   Database,
   Brain,
-  Menu,
+  History,
+  Workflow,
+  Boxes,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useNavigate } from "react-router"
 
 import FilesTab from "../components/FilesTab"
 import EtlTab from "../components/EtlTab"
 import MLTab from "../components/MLTab"
+import PipelineTab from "../components/PipelineTab"
 
-const tabs = [
+const managementTabs = [
   { id: "files", label: "Files", icon: Files },
   { id: "etl", label: "ETL", icon: Database },
   { id: "ml", label: "ML", icon: Brain },
+
+  // 🔥 NEW
+  { id: "pipelines", label: "Pipelines", icon: Workflow },
+  { id: "models", label: "Models", icon: Boxes },
+]
+
+const historyTabs = [
+  { id: "history", label: "History", icon: History },
 ]
 
 export default function Dashboard() {
   const [tab, setTab] = useState("files")
+  const navigate = useNavigate()
 
   return (
     <div className="flex min-h-screen">
@@ -39,24 +51,54 @@ export default function Dashboard() {
         </div>
 
         {/* NAV */}
-        <div className="flex-1 p-3 space-y-1">
-          {tabs.map((t) => {
-            const Icon = t.icon
+        <div className="flex-1 p-3 space-y-6">
 
-            return (
-              <Button
-                key={t.id}
-                variant={tab === t.id ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start gap-3"
-                )}
-                onClick={() => setTab(t.id)}
-              >
-                <Icon size={18} />
-                {t.label}
-              </Button>
-            )
-          })}
+          {/* MANAGEMENT */}
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground px-2">
+              Management
+            </p>
+
+            {managementTabs.map((t) => {
+              const Icon = t.icon
+
+              return (
+                <Button
+                  key={t.id}
+                  variant={tab === t.id ? "default" : "ghost"}
+                  className="w-full justify-start gap-3"
+                  onClick={() => setTab(t.id)}
+                >
+                  <Icon size={18} />
+                  {t.label}
+                </Button>
+              )
+            })}
+          </div>
+
+          {/* HISTORY */}
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground px-2">
+              History
+            </p>
+
+            {historyTabs.map((t) => {
+              const Icon = t.icon
+
+              return (
+                <Button
+                  key={t.id}
+                  variant={tab === t.id ? "default" : "ghost"}
+                  className="w-full justify-start gap-3"
+                  onClick={() => setTab(t.id)}
+                >
+                  <Icon size={18} />
+                  {t.label}
+                </Button>
+              )
+            })}
+          </div>
+
         </div>
 
         {/* FOOTER */}
@@ -74,8 +116,12 @@ export default function Dashboard() {
             {tab}
           </h2>
 
-          <Button variant="outline" size="icon">
-            <Menu size={16} />
+          <Button
+            variant="outline"
+            className="rounded-full px-4"
+            onClick={() => navigate("/survey")}
+          >
+            Survey
           </Button>
         </div>
 
@@ -83,6 +129,9 @@ export default function Dashboard() {
         {tab === "files" && <FilesTab />}
         {tab === "etl" && <EtlTab />}
         {tab === "ml" && <MLTab />}
+        {tab === "pipelines" && <PipelineTab />}
+        {tab === "models" && <div>Models coming soon...</div>}
+        {tab === "history" && <div>History coming soon...</div>}
       </div>
     </div>
   )
