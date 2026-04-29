@@ -1,16 +1,28 @@
 import os
 import mlflow
 
-AZURE_CONN = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+# 🔥 AZURE SQL = tracking store (NAJWAŻNIEJSZE)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# 🔥 Azure Blob (artifact storage)
+AZURE_STORAGE_ACCOUNT = os.getenv("AZURE_STORAGE_ACCOUNT")
 CONTAINER = os.getenv("AZURE_CONTAINER_NAME", "mlops-files")
 
-# 🔥 MLflow config
-MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
-
-# 🔥 Azure Blob jako artifact storage
-MLFLOW_ARTIFACT_URI = f"wasbs://{CONTAINER}@{os.getenv('AZURE_STORAGE_ACCOUNT')}.blob.core.windows.net/mlflow"
+MLFLOW_ARTIFACT_URI = (
+    f"wasbs://{CONTAINER}@{AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/mlflow"
+)
 
 
 def setup_mlflow():
-    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
+    if not DATABASE_URL:
+        raise Exception("DATABASE_URL not set")
+
+    # 🔥 KLUCZ: zapis do Azure SQL
+    mlflow.set_tracking_uri(DATABASE_URL)
+
+    # registry = tracking (OK)
+    mlflow.set_registry_uri(DATABASE_URL)
+
+    print("\n🔥 MLflow CONFIG")
+    print("Tracking (Azure SQL):", DATABASE_URL)
+    print("Artifacts (Azure Blob):", MLFLOW_ARTIFACT_URI)
