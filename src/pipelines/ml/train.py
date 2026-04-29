@@ -12,6 +12,7 @@ import joblib
 
 import mlflow
 import mlflow.sklearn
+from src.config.mlflow_config import setup_mlflow
 
 # 🔥 AZURE
 from src.utils.blob_helper import download_bytes, upload_bytes
@@ -58,6 +59,9 @@ class MLPipeline:
 
     @staticmethod
     def train(filename: str, target: str, model_type: str, params: dict):
+
+        setup_mlflow()
+        mlflow.set_experiment("student-dropout")
 
         print("\n🔥 MLPipeline START")
         print("filename:", filename)
@@ -115,6 +119,10 @@ class MLPipeline:
             mlflow.log_metric("accuracy", accuracy)
 
             mlflow.sklearn.log_model(model, "model")
+            with open("temp_model.pkl", "wb") as f:
+                joblib.dump(model, f)
+
+            mlflow.log_artifact("temp_model.pkl")
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         model_name = f"{model_type}_{timestamp}.pkl"

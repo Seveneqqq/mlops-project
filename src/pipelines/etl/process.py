@@ -9,6 +9,7 @@ import mlflow
 from src.pipelines.etl.steps.cleaning import apply_cleaning
 from src.pipelines.etl.steps.encoding import apply_encoding
 from src.pipelines.etl.steps.scaling import apply_scaling
+from src.config.mlflow_config import setup_mlflow
 
 # 🔥 AZURE
 from src.utils.blob_helper import download_bytes, upload_bytes
@@ -23,6 +24,8 @@ class ETLPipeline:
     @staticmethod
     def run(filename: str, steps: dict):
 
+        setup_mlflow()
+        mlflow.set_experiment("etl-pipeline")
         print("\n🔥 ETLPipeline START")
         print("filename:", filename)
 
