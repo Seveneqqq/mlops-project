@@ -5,7 +5,7 @@ import {
   Files,
   Database,
   Brain,
-  History,
+  LibraryBig,
   Workflow,
   Boxes,
 } from "lucide-react"
@@ -18,6 +18,7 @@ import EtlTab from "../components/EtlTab"
 import MLTab from "../components/MLTab"
 import PipelineTab from "../components/PipelineTab"
 import ModelsTab from "../components/ModelsTab"
+import AboutTab from "../components/AboutTab"
 
 const managementTabs = [
   { id: "files", label: "Files", icon: Files },
@@ -29,8 +30,8 @@ const managementTabs = [
   { id: "models", label: "Models", icon: Boxes },
 ]
 
-const historyTabs = [
-  { id: "history", label: "History", icon: History },
+const AboutTabs = [
+  { id: "about", label: "About", icon: LibraryBig },
 ]
 
 export default function Dashboard() {
@@ -77,13 +78,13 @@ export default function Dashboard() {
             })}
           </div>
 
-          {/* HISTORY */}
+          {/* About */}
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground px-2">
-              History
+              About
             </p>
 
-            {historyTabs.map((t) => {
+            {AboutTabs.map((t) => {
               const Icon = t.icon
 
               return (
@@ -132,7 +133,7 @@ export default function Dashboard() {
         {tab === "ml" && <MLTab />}
         {tab === "pipelines" && <PipelineTab />}
         {tab === "models" && <ModelsTab />}
-        {tab === "history" && <div>History coming soon...</div>}
+        {tab === "about" && <AboutTab />}
       </div>
     </div>
   )
