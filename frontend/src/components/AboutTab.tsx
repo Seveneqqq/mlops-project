@@ -1,6 +1,5 @@
 "use client"
-
-import { motion } from "motion/react"
+import { motion, type Variants } from "motion/react"
 import {
   Info,
   Database,
@@ -70,7 +69,7 @@ const architecture = [
   },
 ]
 
-const pageVariants = {
+const pageVariants : Variants = {
   hidden: {
     opacity: 0,
   },
@@ -84,7 +83,7 @@ const pageVariants = {
   },
 }
 
-const cardVariants = {
+const cardVariants : Variants = {
   hidden: {
     opacity: 0,
     y: 46,
@@ -107,7 +106,7 @@ const cardVariants = {
   },
 }
 
-const contentVariants = {
+const contentVariants : Variants = {
   hidden: {
     opacity: 0,
     y: 18,
@@ -127,7 +126,7 @@ const contentVariants = {
   },
 }
 
-const listVariants = {
+const listVariants : Variants = {
   hidden: {},
 
   show: {
@@ -138,7 +137,7 @@ const listVariants = {
   },
 }
 
-const itemVariants = {
+const itemVariants : Variants = {
   hidden: {
     opacity: 0,
     y: 18,
@@ -159,7 +158,7 @@ const itemVariants = {
   },
 }
 
-const badgeVariants = {
+const badgeVariants : Variants = {
   hidden: {
     opacity: 0,
     y: 10,

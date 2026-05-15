@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence, type Variants } from "motion/react"
 import {
   Files,
   Database,
@@ -33,7 +33,7 @@ const AboutTabs = [
   { id: "about", label: "About", icon: LibraryBig },
 ]
 
-const pageVariants = {
+const pageVariants : Variants = {
   initial: {
     opacity: 0,
   },
@@ -52,7 +52,7 @@ const pageVariants = {
   },
 }
 
-const blockVariants = {
+const blockVariants : Variants = {
   initial: {
     opacity: 0,
     y: 42,
@@ -80,7 +80,7 @@ const blockVariants = {
   },
 }
 
-const insideVariants = {
+const insideVariants : Variants = {
   initial: {
     opacity: 0,
     y: 18,
