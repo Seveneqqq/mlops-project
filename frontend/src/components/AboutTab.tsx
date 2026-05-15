@@ -1,5 +1,6 @@
 "use client"
 
+import { motion } from "motion/react"
 import {
   Info,
   Database,
@@ -10,6 +11,8 @@ import {
   Cloud,
   CheckCircle,
   Code2,
+  Sparkles,
+  Rocket,
 } from "lucide-react"
 
 import {
@@ -44,137 +47,395 @@ const stack = [
   "Relacyjna baza danych",
 ]
 
+const architecture = [
+  {
+    icon: Cloud,
+    text: "Azure Storage dla plików i modeli",
+  },
+  {
+    icon: Database,
+    text: "Baza danych dla metadanych i konfiguracji",
+  },
+  {
+    icon: Server,
+    text: "Backend API obsługujący ETL i ML",
+  },
+  {
+    icon: Brain,
+    text: "Modele predykcyjne trenowane na danych",
+  },
+  {
+    icon: BarChart3,
+    text: "Dashboard frontendowy dla użytkownika",
+  },
+]
+
+const pageVariants = {
+  hidden: {
+    opacity: 0,
+  },
+
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.08,
+    },
+  },
+}
+
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 46,
+    scale: 0.94,
+    filter: "blur(8px)",
+  },
+
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+
+    transition: {
+      type: "spring",
+      stiffness: 210,
+      damping: 22,
+      mass: 0.9,
+    },
+  },
+}
+
+const contentVariants = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+  },
+
+  show: {
+    opacity: 1,
+    y: 0,
+
+    transition: {
+      type: "spring",
+      stiffness: 230,
+      damping: 24,
+      mass: 0.75,
+      delay: 0.16,
+    },
+  },
+}
+
+const listVariants = {
+  hidden: {},
+
+  show: {
+    transition: {
+      staggerChildren: 0.055,
+      delayChildren: 0.2,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+    scale: 0.94,
+  },
+
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+
+    transition: {
+      type: "spring",
+      stiffness: 330,
+      damping: 24,
+      mass: 0.7,
+    },
+  },
+}
+
+const badgeVariants = {
+  hidden: {
+    opacity: 0,
+    y: 10,
+    scale: 0.85,
+  },
+
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+
+    transition: {
+      type: "spring",
+      stiffness: 420,
+      damping: 22,
+    },
+  },
+}
+
+function AnimatedCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <motion.div
+      variants={cardVariants}
+      whileHover={{
+        y: -6,
+        scale: 1.01,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 360,
+        damping: 24,
+      }}
+      className={className}
+    >
+      <Card className="relative h-full overflow-hidden rounded-3xl border-border/60 bg-background/75 shadow-xl shadow-black/5 backdrop-blur-xl">
+        {children}
+      </Card>
+    </motion.div>
+  )
+}
+
 export default function AboutTab() {
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-3 gap-6"
+    >
+      {/* LEFT */}
       <div className="col-span-2 space-y-6">
-        <Card>
+        {/* ABOUT */}
+        <AnimatedCard>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Info size={18} />
-              About Project
-            </CardTitle>
+            <motion.div variants={contentVariants}>
+              <CardTitle className="flex items-center gap-2">
+                <Info size={18} />
+                About Project
+              </CardTitle>
+            </motion.div>
           </CardHeader>
 
-          <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-            <p>
-              Projekt przedstawia kompletną platformę analityczną typu
-              MLOps, której celem jest obsługa procesu pracy z danymi:
-              od załadowania plików, przez przetwarzanie ETL, aż po
-              trenowanie modeli predykcyjnych i zarządzanie ich wersjami.
-            </p>
+          <CardContent>
+            <motion.div
+              variants={contentVariants}
+              className="space-y-4 text-sm text-muted-foreground leading-relaxed"
+            >
+              <p>
+                Projekt przedstawia kompletną platformę analityczną typu
+                MLOps, której celem jest obsługa procesu pracy z danymi:
+                od załadowania plików, przez przetwarzanie ETL, aż po
+                trenowanie modeli predykcyjnych i zarządzanie ich wersjami.
+              </p>
 
-            <p>
-              System został przygotowany w ramach projektu zespołowego
-              z zakresu hurtowni danych oraz metod analitycznych. Aplikacja
-              umożliwia odtworzenie pełnego przepływu danych w czystym
-              środowisku oraz prezentuje wyniki w formie dashboardu.
-            </p>
+              <p>
+                System został przygotowany w ramach projektu zespołowego
+                z zakresu hurtowni danych oraz metod analitycznych.
+                Aplikacja umożliwia odtworzenie pełnego przepływu danych
+                w czystym środowisku oraz prezentuje wyniki
+                w formie dashboardu.
+              </p>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Badge>Data Warehouse</Badge>
-              <Badge variant="outline">ETL</Badge>
-              <Badge variant="outline">Machine Learning</Badge>
-              <Badge variant="outline">MLOps</Badge>
-              <Badge variant="outline">Dashboard</Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle size={18} />
-              Functionalities
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="grid grid-cols-2 gap-3">
-            {features.map((feature) => (
-              <div
-                key={feature}
-                className="flex items-start gap-2 rounded-lg border p-3 text-sm"
+              <motion.div
+                variants={listVariants}
+                className="flex flex-wrap gap-2 pt-2"
               >
-                <CheckCircle size={16} className="text-green-500 mt-0.5" />
-                <span>{feature}</span>
-              </div>
-            ))}
+                {[
+                  "Data Warehouse",
+                  "ETL",
+                  "Machine Learning",
+                  "MLOps",
+                  "Dashboard",
+                ].map((item, index) => (
+                  <motion.div
+                    key={item}
+                    variants={badgeVariants}
+                  >
+                    <Badge
+                      variant={index === 0 ? "default" : "outline"}
+                    >
+                      {item}
+                    </Badge>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
           </CardContent>
-        </Card>
+        </AnimatedCard>
+
+        {/* FEATURES */}
+        <AnimatedCard>
+          <CardHeader>
+            <motion.div variants={contentVariants}>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle size={18} />
+                Functionalities
+              </CardTitle>
+            </motion.div>
+          </CardHeader>
+
+          <CardContent>
+            <motion.div
+              variants={listVariants}
+              className="grid grid-cols-2 gap-3"
+            >
+              {features.map((feature) => (
+                <motion.div
+                  key={feature}
+                  variants={itemVariants}
+                  className="
+                    flex
+                    items-start
+                    gap-2
+                    rounded-2xl
+                    border
+                    bg-background/70
+                    p-3
+                    text-sm
+                    shadow-sm
+                  "
+                >
+                  <CheckCircle
+                    size={16}
+                    className="mt-0.5 text-green-500"
+                  />
+
+                  <span>{feature}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          </CardContent>
+        </AnimatedCard>
       </div>
 
+      {/* RIGHT */}
       <div className="space-y-6">
-        <Card>
+        {/* STACK */}
+        <AnimatedCard>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Code2 size={18} />
-              Tech Stack
-            </CardTitle>
+            <motion.div variants={contentVariants}>
+              <CardTitle className="flex items-center gap-2">
+                <Code2 size={18} />
+                Tech Stack
+              </CardTitle>
+            </motion.div>
           </CardHeader>
 
-          <CardContent className="flex flex-wrap gap-2">
-            {stack.map((item) => (
-              <Badge key={item} variant="secondary">
-                {item}
-              </Badge>
-            ))}
+          <CardContent>
+            <motion.div
+              variants={listVariants}
+              className="flex flex-wrap gap-2"
+            >
+              {stack.map((item) => (
+                <motion.div
+                  key={item}
+                  variants={badgeVariants}
+                >
+                  <Badge variant="secondary">
+                    {item}
+                  </Badge>
+                </motion.div>
+              ))}
+            </motion.div>
           </CardContent>
-        </Card>
+        </AnimatedCard>
 
-        <Card>
+        {/* ARCHITECTURE */}
+        <AnimatedCard>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <GitBranch size={18} />
-              Architecture
-            </CardTitle>
+            <motion.div variants={contentVariants}>
+              <CardTitle className="flex items-center gap-2">
+                <GitBranch size={18} />
+                Architecture
+              </CardTitle>
+            </motion.div>
           </CardHeader>
 
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center gap-3">
-              <Cloud size={16} />
-              <span>Azure Storage dla plików i modeli</span>
-            </div>
+          <CardContent>
+            <motion.div
+              variants={listVariants}
+              className="space-y-3 text-sm"
+            >
+              {architecture.map((item) => {
+                const Icon = item.icon
 
-            <div className="flex items-center gap-3">
-              <Database size={16} />
-              <span>Baza danych dla metadanych i konfiguracji</span>
-            </div>
+                return (
+                  <motion.div
+                    key={item.text}
+                    variants={itemVariants}
+                    className="
+                      flex
+                      items-center
+                      gap-3
+                      rounded-2xl
+                      border
+                      bg-background/60
+                      p-3
+                    "
+                  >
+                    <div
+                      className="
+                        rounded-xl
+                        bg-primary/10
+                        p-2
+                        text-primary
+                      "
+                    >
+                      <Icon size={16} />
+                    </div>
 
-            <div className="flex items-center gap-3">
-              <Server size={16} />
-              <span>Backend API obsługujący ETL i ML</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Brain size={16} />
-              <span>Modele predykcyjne trenowane na danych</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <BarChart3 size={16} />
-              <span>Dashboard frontendowy dla użytkownika</span>
-            </div>
+                    <span>{item.text}</span>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
           </CardContent>
-        </Card>
+        </AnimatedCard>
 
-        <Card>
+        {/* SCOPE */}
+        <AnimatedCard>
           <CardHeader>
-            <CardTitle>Assessment Scope</CardTitle>
+            <motion.div variants={contentVariants}>
+              <CardTitle className="flex items-center gap-2">
+                <Rocket size={18} />
+                Assessment Scope
+              </CardTitle>
+            </motion.div>
           </CardHeader>
 
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>
-              Projekt spełnia wymagania obejmujące bazę danych,
-              pipeline ETL, model predykcyjny, dashboard oraz elementy
-              MLOps.
-            </p>
+          <CardContent>
+            <motion.div
+              variants={contentVariants}
+              className="space-y-4 text-sm text-muted-foreground"
+            >
+              <p>
+                Projekt spełnia wymagania obejmujące bazę danych,
+                pipeline ETL, model predykcyjny, dashboard oraz
+                elementy MLOps.
+              </p>
 
-            <Badge className="mt-2">
-              Target grade: db / db+
-            </Badge>
+              <motion.div variants={badgeVariants}>
+                <Badge className="gap-1.5">
+                  <Sparkles size={13} />
+                  Target grade: db / db+
+                </Badge>
+              </motion.div>
+            </motion.div>
           </CardContent>
-        </Card>
+        </AnimatedCard>
       </div>
-    </div>
+    </motion.div>
   )
 }
